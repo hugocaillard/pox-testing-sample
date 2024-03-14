@@ -100,6 +100,7 @@ describe("test pox-4", () => {
   const stackingKeys = [
     "7287ba251d44a4d3fd9276c88ce34c5c52a038955511cccaf77e61068649c17801",
     "530d9f61984c888536871c6573073bdfc0058896dc1adfe9a6a10dfacadc209101",
+    "d655b2523bcd65e34889725c73064feb17ceb796831c0e111ba1a552b0f31b3901",
   ];
 
   const accounts = stackingKeys.map((privKey) => {
@@ -145,29 +146,23 @@ describe("test pox-4", () => {
     assert(isClarityType(poxInfo.result, ClarityType.ResponseOk));
   });
 
-  it("can call get-pox-info", async () => {
+  /*
+    (stack-stx (amount-ustx uint)
+      (pox-addr (tuple (version (buff 1)) (hashbytes (buff 32))))
+      (start-burn-ht uint)
+      (lock-period uint)
+      (signer-sig (optional (buff 65)))
+      (signer-key (buff 33))
+      (max-amount uint)
+      (auth-id uint))
+  */
+
+  it("can stack stxs", async () => {
     const account = accounts[0];
     const rewardCycle = 0;
     const burnBlockHeight = 0;
-    const period = 1;
+    const period = 10;
     const authId = randInt();
-    const poxInfo = simnet.callReadOnlyFn(
-      poxContract,
-      "get-pox-info",
-      [],
-      address1
-    );
-
-    assert(isClarityType(poxInfo.result, ClarityType.ResponseOk));
-
-    expect(poxInfo.result.value).toHaveProperty(
-      "data.min-amount-ustx",
-      Cl.uint(stackingThreshold)
-    );
-    expect(poxInfo.result.value).toHaveProperty(
-      "data.reward-cycle-id",
-      Cl.uint(rewardCycle)
-    );
 
     const sigArgs = {
       authId,
@@ -179,18 +174,8 @@ describe("test pox-4", () => {
       signerPrivateKey: account.signerPrivKey,
     };
     const signerSignature = account.client.signPoxSignature(sigArgs);
+    const signerKey = Cl.bufferFromHex(account.signerPubKey);
     const ustxAmount = Math.floor(stackingThreshold * 1.5);
-
-    /*
-      (stack-stx (amount-ustx uint)
-        (pox-addr (tuple (version (buff 1)) (hashbytes (buff 32))))
-        (start-burn-ht uint)
-        (lock-period uint)
-        (signer-sig (optional (buff 65)))
-        (signer-key (buff 33))
-        (max-amount uint)
-        (auth-id uint))
-    */
 
     const stackStxArgs = [
       Cl.uint(ustxAmount),
@@ -198,7 +183,7 @@ describe("test pox-4", () => {
       Cl.uint(burnBlockHeight),
       Cl.uint(period),
       Cl.some(Cl.bufferFromHex(signerSignature)),
-      Cl.bufferFromHex(account.signerPubKey),
+      signerKey,
       Cl.uint(maxAmount),
       Cl.uint(authId),
     ];
@@ -215,7 +200,7 @@ describe("test pox-4", () => {
         "lock-amount": Cl.uint(187500000000),
         "signer-key": Cl.bufferFromHex(account.signerPubKey),
         stacker: Cl.principal(address1),
-        "unlock-burn-height": Cl.uint(2100),
+        "unlock-burn-height": Cl.uint(11550),
       })
     );
 
@@ -223,7 +208,67 @@ describe("test pox-4", () => {
     expect(stxAccount).toBeTuple({
       locked: Cl.uint(ustxAmount),
       unlocked: Cl.uint(initialSTXBalance - ustxAmount),
-      "unlock-height": Cl.uint(2100),
+      "unlock-height": Cl.uint(11550),
     });
+  });
+
+  it("can stack stxs from multiple accounts with the same key", () => {
+    const signerAccount = accounts[0];
+    const rewardCycle = 0;
+    const burnBlockHeight = 0;
+    const period = 10;
+
+    const signerAccountKey = Cl.bufferFromHex(signerAccount.signerPubKey);
+
+    for (const account of accounts) {
+      const authId = randInt();
+      const sigArgs = {
+        authId,
+        maxAmount,
+        rewardCycle,
+        period,
+        topic: Pox4SignatureTopic.StackStx,
+        poxAddress: account.btcAddr,
+        signerPrivateKey: signerAccount.signerPrivKey,
+      };
+      const signerSignature = signerAccount.client.signPoxSignature(sigArgs);
+      const ustxAmount = Math.floor(stackingThreshold * 1.5);
+
+      const stackStxArgs = [
+        Cl.uint(ustxAmount),
+        poxAddressToTuple(account.btcAddr),
+        Cl.uint(burnBlockHeight),
+        Cl.uint(period),
+        Cl.some(Cl.bufferFromHex(signerSignature)),
+        signerAccountKey,
+        Cl.uint(maxAmount),
+        Cl.uint(authId),
+      ];
+
+      const stackStx = simnet.callPublicFn(
+        poxContract,
+        "stack-stx",
+        stackStxArgs,
+        account.stxAddress
+      );
+
+      expect(stackStx.result).toBeOk(
+        Cl.tuple({
+          "lock-amount": Cl.uint(187500000000),
+          "signer-key": Cl.bufferFromHex(signerAccount.signerPubKey),
+          stacker: Cl.principal(account.stxAddress),
+          "unlock-burn-height": Cl.uint(11550),
+        })
+      );
+
+      const stxAccount = simnet.runSnippet(
+        `(stx-account '${account.stxAddress})`
+      );
+      expect(stxAccount).toBeTuple({
+        locked: Cl.uint(ustxAmount),
+        unlocked: Cl.uint(initialSTXBalance - ustxAmount),
+        "unlock-height": Cl.uint(11550),
+      });
+    }
   });
 });
