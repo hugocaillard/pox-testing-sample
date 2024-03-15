@@ -49,7 +49,7 @@ describe("fast pool wrapper tests", () => {
       }>
     >;
     expect(cvToString(result)).toBe(
-      "(ok (tuple (commit-result true) (lock-result (tuple (lock-amount u9999999000000) (stacker ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.fast-pool-wrapper) (unlock-burn-height u4200)))))"
+      "(ok (tuple (commit-result true) (lock-result (tuple (lock-amount u9999999000000) (stacker ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.fast-pool-wrapper) (unlock-burn-height u2100)))))"
     );
 
     expect(response.events[0].event).toBe("stx_transfer_event");
@@ -68,11 +68,11 @@ describe("fast pool wrapper tests", () => {
     ) as TupleCV<{ locked: UIntCV; "unlock-height": UIntCV; unlocked: UIntCV }>;
 
     expect(cvToString(stxAccount)).toBe(
-      "(tuple (locked u0) (unlock-height u0) (unlocked u10000000000000))"
+      "(tuple (locked u9999999000000) (unlock-height u2100) (unlocked u1000000))"
     );
 
     // verify result of stx-account and the delegation call
-    expect(stxAccount.data.locked).toBe(
+    expect(stxAccount.data.locked).toStrictEqual(
       result.value.data["lock-result"].data["lock-amount"]
     );
   });

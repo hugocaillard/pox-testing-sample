@@ -260,7 +260,15 @@
     "@types/bn.js" "^5.1.0"
     "@types/node" "^18.0.4"
 
-"@stacks/encryption@^6.12.0":
+"@stacks/common@^6.11.4-pr.36558cf.0", "@stacks/common@^6.11.4-pr.e279ac3.0":
+  version "6.11.4-pr.e279ac3.0"
+  resolved "https://registry.yarnpkg.com/@stacks/common/-/common-6.11.4-pr.e279ac3.0.tgz#02adb8b078803492cd3525bd3d96f6d9fdc7ee07"
+  integrity sha512-6PMFR75VWmVnuNSGd0UNz6PDFUKcwEsZIEHzODeG4YDfoGq8NuFi+Wu4box9iKk2gbYfqJL5i0TW9F5sjY2+Bg==
+  dependencies:
+    "@types/bn.js" "^5.1.0"
+    "@types/node" "^18.0.4"
+
+"@stacks/encryption@^6.11.4-pr.36558cf.0", "@stacks/encryption@^6.12.0":
   version "6.12.0"
   resolved "https://registry.yarnpkg.com/@stacks/encryption/-/encryption-6.12.0.tgz#c630aa7efef5130ab50cd302fb916647b632d4ba"
   integrity sha512-CubE51pHrcxx3yA+xapevPgA9UDleIoEaUZ06/9uD91B42yvTg37HyS8t06rzukU9q+X7Cv2I/+vbuf4nJIo8g==
@@ -283,6 +291,28 @@
     "@stacks/common" "^6.10.0"
     cross-fetch "^3.1.5"
 
+"@stacks/network@^6.11.4-pr.36558cf.0":
+  version "6.11.4-pr.e279ac3.0"
+  resolved "https://registry.yarnpkg.com/@stacks/network/-/network-6.11.4-pr.e279ac3.0.tgz#a666f9dd1f02c065a57163ae5c4e5235deccc52d"
+  integrity sha512-3V7Gopn4zyNqKV3+62asMX9FWiZ5cKlzb3kBwfrui3fACHE6fFamPYfyPzNCQ1Y6Cpw00FS2OBVVq2Qw1GKWtw==
+  dependencies:
+    "@stacks/common" "^6.11.4-pr.e279ac3.0"
+    cross-fetch "^3.1.5"
+
+"@stacks/stacking@6.11.4-pr.36558cf.0":
+  version "6.11.4-pr.36558cf.0"
+  resolved "https://registry.yarnpkg.com/@stacks/stacking/-/stacking-6.11.4-pr.36558cf.0.tgz#f7c689f39e897648b3fb6fdcdaadebc5de06fe5c"
+  integrity sha512-BK3da72woKdqwrSi5KrQrp7pfEBSrJKDE/gn/yt5RRkYcX38jbUoNauJqbNCHaPgKdPlYVzYnmtbe4f5YUQ+Ng==
+  dependencies:
+    "@noble/hashes" "1.1.5"
+    "@scure/base" "1.1.1"
+    "@stacks/common" "^6.11.4-pr.36558cf.0"
+    "@stacks/encryption" "^6.11.4-pr.36558cf.0"
+    "@stacks/network" "^6.11.4-pr.36558cf.0"
+    "@stacks/stacks-blockchain-api-types" "^0.61.0"
+    "@stacks/transactions" "^6.11.4-pr.36558cf.0"
+    bs58 "^5.0.0"
+
 "@stacks/stacking@^6.11.4-pr.36558cf.0":
   version "6.12.0"
   resolved "https://registry.yarnpkg.com/@stacks/stacking/-/stacking-6.12.0.tgz#67980cc169f141e0d6138deaa03744f416fdc23c"
@@ -301,7 +331,7 @@
   resolved "https://registry.yarnpkg.com/@stacks/stacks-blockchain-api-types/-/stacks-blockchain-api-types-0.61.0.tgz#f8bc61ad7781fdc0d9e9db711580db984f164e93"
   integrity sha512-yPOfTUboo5eA9BZL/hqMcM71GstrFs9YWzOrJFPeP4cOO1wgYvAcckgBRbgiE3NqeX0A7SLZLDAXLZbATuRq9w==
 
-"@stacks/transactions@^6.12.0":
+"@stacks/transactions@^6.11.4-pr.36558cf.0", "@stacks/transactions@^6.12.0":
   version "6.12.0"
   resolved "https://registry.yarnpkg.com/@stacks/transactions/-/transactions-6.12.0.tgz#24dfff7136cb2e6869fe76a26a009f40ac122921"
   integrity sha512-gRP3SfTaAIoTdjMvOiLrMZb/senqB8JQlT5Y4C3/CiHhiprYwTx7TbOCSa7WsNOU99H4aNfHvatmymuggXQVkA==
